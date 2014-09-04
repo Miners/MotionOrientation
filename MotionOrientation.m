@@ -30,12 +30,7 @@ NSString* const kMotionOrientationKey = @"kMotionOrientationKey";
 
 @synthesize showDebugLog = _showDebugLog;
 
-+ (void)initialize
-{
-    [MotionOrientation sharedInstance];
-}
-
-+ (MotionOrientation *)sharedInstance
++(instancetype)sharedInstance
 {
     static MotionOrientation *sharedInstance = nil;
     static dispatch_once_t onceToken;
@@ -45,35 +40,57 @@ NSString* const kMotionOrientationKey = @"kMotionOrientationKey";
     return sharedInstance;
 }
 
-- (void)_initialize
+-(id)init
 {
-    self.showDebugLog = NO;
-    
-    self.operationQueue = [[NSOperationQueue alloc] init];
-    
-    self.motionManager = [[CMMotionManager alloc] init];
-    self.motionManager.accelerometerUpdateInterval = 0.1;
-    if ( ![self.motionManager isAccelerometerAvailable] ) {
-        if ( self.showDebugLog ) {
-            NSLog(@"MotionOrientation - Accelerometer is NOT available");
-        }
+    if ((self = [super init])) {
+        _showDebugLog = NO;
+        _operationQueue = [[NSOperationQueue alloc] init];
+
+        _motionManager = [[CMMotionManager alloc] init];
+        _motionManager.accelerometerUpdateInterval = 0.1;
+
+        if ( ![_motionManager isAccelerometerAvailable] ) {
+            if ( self.showDebugLog ) {
+                NSLog(@"MotionOrientation - Accelerometer is NOT available");
+            }
 #ifdef __i386__
-        [self simulatorInit];
+            [self simulatorInit];
 #endif
-        return;
+        }
+
     }
+    return self;
+}
+
+-(void)start {
+#ifdef __i386__
+    if ([[UIDevice currentDevice] isGeneratingDeviceOrientationNotifications]) return;
+
+    NSLog(@"MotionOrientation - Simulator in use. Using UIDevice instead");
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deviceOrientationChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
+    return;
+#endif
+
+    if (!self.motionManager.isAccelerometerAvailable) return;
+    if (self.motionManager.isAccelerometerActive) return;
+
     [self.motionManager startAccelerometerUpdatesToQueue:self.operationQueue withHandler:^(CMAccelerometerData *accelerometerData, NSError *error) {
         [self accelerometerUpdateWithData:accelerometerData error:error];
     }];
 }
 
-- (id)init
-{
-    self = [super init];
-    if ( self ) {
-        [self _initialize];
-    }
-    return self;
+-(void)stop {
+#ifdef __i386__
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    return;
+#endif
+
+    [self.motionManager stopAccelerometerUpdates];
 }
 
 - (CGAffineTransform)affineTransform

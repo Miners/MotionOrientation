@@ -21,7 +21,8 @@ extern NSString* const kMotionOrientationKey;
 
 @property (assign) BOOL showDebugLog;
 
-+ (void)initialize;
-+ (MotionOrientation *)sharedInstance;
++(instancetype)sharedInstance;
 
+-(void)start;
+-(void)stop;
 @end

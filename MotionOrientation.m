@@ -149,21 +149,15 @@ NSString* const kMotionOrientationKey = @"kMotionOrientationKey";
     UIInterfaceOrientation newInterfaceOrientation = self.interfaceOrientation;
     UIDeviceOrientation newDeviceOrientation = self.deviceOrientation;
     
-#ifdef DEBUG
     NSString* orientationString = nil;
-#endif
     if(absoluteZ > 0.8f)
     {
         if ( z > 0.0f ) {
             newDeviceOrientation = UIDeviceOrientationFaceDown;
-#ifdef DEBUG
             orientationString = @"MotionOrientation - FaceDown";
-#endif
         } else {
             newDeviceOrientation = UIDeviceOrientationFaceUp;
-#ifdef DEBUG
             orientationString = @"MotionOrientation - FaceUp";
-#endif
         }
 	}
     else if(angle >= -2.0 && angle <= -1.0) // (angle >= -2.25 && angle <= -0.75)
@@ -171,36 +165,28 @@ NSString* const kMotionOrientationKey = @"kMotionOrientationKey";
         newInterfaceOrientation = UIInterfaceOrientationPortrait;
         newDeviceOrientation = UIDeviceOrientationPortrait;
         //self.captureVideoOrientation = AVCaptureVideoOrientationPortrait;
-#ifdef DEBUG
         orientationString = @"MotionOrientation - Portrait";
-#endif
 	}
 	else if(angle >= -0.5 && angle <= 0.5) // (angle >= -0.75 && angle <= 0.75)
 	{
         newInterfaceOrientation = UIInterfaceOrientationLandscapeLeft;
         newDeviceOrientation = UIDeviceOrientationLandscapeLeft;
         //self.captureVideoOrientation = AVCaptureVideoOrientationLandscapeRight;
-#ifdef DEBUG
         orientationString = @"MotionOrientation - Left";
-#endif
 	}
 	else if(angle >= 1.0 && angle <= 2.0) // (angle >= 0.75 && angle <= 2.25)
 	{
         newInterfaceOrientation = UIInterfaceOrientationPortraitUpsideDown;
         newDeviceOrientation = UIDeviceOrientationPortraitUpsideDown;
         //self.captureVideoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
-#ifdef DEBUG
         orientationString = @"MotionOrientation - UpsideDown";
-#endif
 	}
 	else if(angle <= -2.5 || angle >= 2.5) // (angle <= -2.25 || angle >= 2.25)
 	{
         newInterfaceOrientation = UIInterfaceOrientationLandscapeRight;
         newDeviceOrientation = UIDeviceOrientationLandscapeRight;
         //self.captureVideoOrientation = AVCaptureVideoOrientationLandscapeLeft;
-#ifdef DEBUG
         orientationString = @"MotionOrientation - Right";
-#endif
 	} else {
         
     }

@@ -21,7 +21,7 @@
     [self.window makeKeyAndVisible];
     
     // Register for MotionOrientation orientation changes
-    [MotionOrientation initialize];
+    [[MotionOrientation sharedInstance] start];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(motionOrientationChanged:)
                                                  name:MotionOrientationChangedNotification
